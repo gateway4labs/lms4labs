@@ -1,0 +1,70 @@
+.wp-socializer{
+	display: block;
+	margin: 0px 0px 10px;
+	padding: 0px;
+}
+.wp-socializer ul {
+	display: inline;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+.wp-socializer ul li {
+	background: none;
+	/*display: inline !important;*/
+	list-style-type: none;
+	margin: 0px 5px 5px 0px;
+	padding: 0px;
+	float: left !important;
+}
+.wp-socializer ul li:before { 
+	content: ""; 
+}
+.wp-socializer img{
+	float: none;
+	vertical-align:middle;
+	margin: 0px 5px 0px 0px !important;
+	padding: 0px;
+}
+.addthis_button img{
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+.wp-socializer-clearer{
+	clear: left;
+}
+
+/** Effects **/
+
+.wp-socializer-opacity li {
+	-webkit-opacity: 0.4;
+	-moz-opacity: 0.4;
+	filter:alpha(opacity=40);
+	opacity: 0.4;
+}
+.wp-socializer-opacity li:hover {
+	-webkit-opacity: 1;
+	-moz-opacity: 1;
+	filter:alpha(opacity=100);
+	opacity: 1;
+}
+.wp-socializer-jump li {
+	margin: 0px;	
+}
+.wp-socializer-jump li:hover {
+	margin-top: -5px;
+}
+
+/** Columns **/
+.columns-5 li{
+	width: 19%;
+}
+.columns-4 li{
+	width: 24%;
+}
+.columns-3 li{
+	width: 32%;
+}
+.columns-2 li{
+	width: 48%;
+}

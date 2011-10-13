@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is a Reload version 2.5.5 SCORM 1.2 Content Package document-->
+<!--Spawned from the Reload Content Package Generator - http://www.reload.ac.uk-->
+<manifest xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_rootv1p2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2" identifier="MANIFEST-85846B4587FF32AAEC9C662FD269B8FE" xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <organizations default="ORG-93B3439AD4BE452C2015534553DC792C">
+    <organization identifier="ORG-93B3439AD4BE452C2015534553DC792C" structure="hierarchical">
+      <title>Organization</title>
+      <item identifier="ITEM-CC442CC86861E69DE971EB5192958BAF" isvisible="true" identifierref="RES-63481ABE29B85D7D86AA24004B1D2021">
+        <title>OpenLabs - ElectroLab</title>
+        <item identifier="ITEM-124590E02B542B16E6124AB962378059" isvisible="true" identifierref="RES-D7908B6CB9E08EC7F29A011F1E9C4877">
+          <title>launch visir</title>
+        </item>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES-63481ABE29B85D7D86AA24004B1D2021" type="webcontent" href="overview.htm">
+      <file href="overview.htm" />
+      <file href="overview_files/breadboard.png" />
+      <file href="overview_files/defaultcss.css" />
+      <file href="overview_files/osc.png" />
+    </resource>
+    <resource identifier="RES-D7908B6CB9E08EC7F29A011F1E9C4877" type="webcontent" href="launchvisir.html">
+      <file href="launchvisir.html" />
+    </resource>
+  </resources>
+</manifest>
+
