@@ -1,3 +1,5 @@
 regex:
 
 ^labmanager/env
+^labmanager/test.db
+.*\.pyc$
