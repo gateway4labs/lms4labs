@@ -1,6 +1,7 @@
 regex:
 
 ^labmanager/env
+^labmanager/config.py
 ^labmanager/test.db
 ^labmanager/labmanager.db
 .*\.pyc$
