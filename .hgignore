@@ -2,5 +2,6 @@ regex:
 
 ^labmanager/env
 ^labmanager/test.db
+^labmanager/labmanager.db
 .*\.pyc$
 .*\.swp$
