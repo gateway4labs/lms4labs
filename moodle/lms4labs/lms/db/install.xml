@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/wlab/db" VERSION="20110919" COMMENT="XMLDB file for Moodle mod/wlab"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+  
+  <TABLES>
+
+    <TABLE NAME="lms4labs" COMMENT="lms4labs information of access">
+      <FIELDS>
+        <FIELD NAME="key" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="key" NEXT="value"/>
+        <FIELD NAME="value" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="value of key" PREVIOUS="key"/>
+	</FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="key" COMMENT="Primary key for lms4labs"/>
+      </KEYS>
+    </TABLE>
+
+   
+
+  </TABLES>
+</XMLDB>
