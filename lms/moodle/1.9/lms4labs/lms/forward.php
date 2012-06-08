@@ -71,8 +71,12 @@ $request_data = array(
           );
 
 $request= json_encode($request_data);
+$auxu=get_record('lms4labs','name', 'LMS-User');
+$auxp=get_record('lms4labs','name', 'LMS-Password');
+
 $client = new HttpClient('localhost:5000');
-$client->setAuthorization("uned", "password");
+//$client->setAuthorization("uned", "password");
+$client->setAuthorization($auxu->value, $auxp->value);
 $client->post('/lms4labs/labmanager/requests/',$request);
 $content = $client->getContent();
 echo $content;

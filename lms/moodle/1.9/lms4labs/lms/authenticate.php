@@ -35,8 +35,11 @@ if (is_siteadmin($USER->id)) {
                 	"full-name"  => $auxname,
       ); 
 	$request= json_encode($request_data);
+	$auxu=get_record('lms4labs','name', 'LMS-User');
+	$auxp=get_record('lms4labs','name', 'LMS-Password');
 	$client = new HttpClient('weblab.ieec.uned.es:5000');
-	$client->setAuthorization("uned", "password");
+	//$client->setAuthorization("uned", "password");
+	$client->setAuthorization($auxu->value, $auxp->value);
 	$client->post('/lms4labs/labmanager/lms/admin/authenticate/',$request);
 	$content = $client->getContent(); 
 	echo $content; 	
