@@ -4,6 +4,7 @@ class block_lms4labs extends block_base {
 
     function init() {
         $this->title = 'Lms for labs';
+	 $this->version = 2004111200;
     }
 
     
