@@ -7,11 +7,12 @@
 
     <TABLE NAME="lms4labs" COMMENT="lms4labs information of access">
       <FIELDS>
-        <FIELD NAME="key" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="key" NEXT="value"/>
-        <FIELD NAME="value" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="value of key" PREVIOUS="key"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" ENUM="false" COMMENT="id" NEXT="name"/>
+	<FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="name" PREVIOUS="id" NEXT="value"/>
+        <FIELD NAME="value" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="value of key" PREVIOUS="name"/>
 	</FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="key" COMMENT="Primary key for lms4labs"/>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for lms4labs"/>
       </KEYS>
     </TABLE>
 
