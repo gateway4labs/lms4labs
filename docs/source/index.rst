@@ -8,6 +8,10 @@ Welcome to lms4labs's documentation!
 
 Welcome to the lms4labs project documentation.
 
+.. image:: /_static/logo.png
+   :scale: 30
+   :align: center
+
 .. include:: contents.rst.inc
 
 
