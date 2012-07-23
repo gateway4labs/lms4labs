@@ -6,11 +6,9 @@
 Welcome to lms4labs's documentation!
 ====================================
 
-Contents:
+Welcome to the lms4labs project documentation.
 
-.. toctree::
-   :maxdepth: 2
-
+.. include:: contents.rst.inc
 
 
 Indices and tables
