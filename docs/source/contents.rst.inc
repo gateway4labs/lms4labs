@@ -9,8 +9,8 @@ RLMSs to it.
    :maxdepth: 2
 
    foreword
-   design
    vocabulary
+   design
    installation
    quickstart
 
