@@ -1,5 +1,7 @@
 regex:
 
+^env
+^docs/build
 ^labmanager/env
 ^labmanager/config.py
 ^labmanager/test.db
