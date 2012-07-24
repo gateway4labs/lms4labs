@@ -1,3 +1,5 @@
+.. _toctree-directive:
+
 Installation
 ============
 
@@ -41,8 +43,8 @@ In order to deploy it, some Python packaging notions are required, explained in
 the first section. Then, the deployment itself is detailed for Microsoft Windows
 and Linux systems. Finally, notes on the development are described.
 
-pip and virtualenv
-``````````````````
+Notes on pip and virtualenv
+```````````````````````````
 
 Python open source packages are usually uploaded to `PyPI
 <http://pypi.python.org/pypi>`_ (commonly refered to as the cheese shop), and
@@ -145,10 +147,80 @@ environment anymore::
 To start using it again, we only have to call or import the activate script
 again.
 
-WSGI
-````
+Notes on WSGI
+`````````````
 
-adsfas
+WSGI stands for `Web Server Gateway Interface
+<http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_, which is an
+interface that different Python web application providers will use and they can
+automatically be integrated in other web servers. For instance, there is a
+`WSGI module <http://code.google.com/p/modwsgi/>`_ for Apache or for `nginx
+<http://wiki.nginx.org/NgxWSGIModule>`_, so any application developed in a
+WSGI-compliant framework (such as Flask) can be deployed in those web servers.
+There is plenty of information and links about the support in the `WSGI official
+site <http://www.wsgi.org/en/latest/servers.html>`_.
+
+Lms4labs has been developed using Flask, which is WSGI-compliant microframework.
+Therefore, a WSGI-compliant server is required. There are two approaches:
+
+ 1) Use Apache, nginx, `IIS <http://code.google.com/p/isapi-wsgi/>`_ or any other
+    well known web server. There is plenty of documentation on how to deploy
+    Flask applications on those environments in the `Flask documentation
+    <http://flask.pocoo.org/docs/>`_.
+
+ 2) Use a Python WSGI-compliant web server such as `cherrypy
+    <http://www.cherrypy.org/>`_. The advantage of this is that it does not
+    require you to deploy any additional plug-ins to the web server you are
+    already using, and then you can use that server directly or the proxy module
+    of the web server to manage the connections. This approach might be slower,
+    but it is useful to test the system and even to use it in production with a
+    small number of students.
+
+This document covers both approaches, but it is important to understand the
+benefits and drawbacks of each one.
+
+Deploying Lms4labs
+``````````````````
+
+In this section, it is assumed that you already have installed pip and
+virtualenv, and that you have notions of how you want to deploy the Lms4labs
+application.
+
+First of all, download the source code of the lms4labs project and go to the
+labmanager code::
+
+    $ hg clone https://dev/morelab.deusto.es/hg/lms4labs/
+    $ cd lms4labs/labmanager
+
+Then, create an environment called *env* in the same directory where the
+labmanager is installed, and activate it::
+
+    $ virtualenv env
+    $ . env/bin/activate
+    (or, on Windows)
+    $ . env\scripts\activate
+
+Install all the dependencies::
+
+    $ pip install Flask Flask-SQLAlchemy Flask-WTF SQLAlchemy pymySQL pymysql_sa pyflakes cherrypy
+
+At this point, everything is ready to be deployed. First, we should add the
+configuration file. A sample one is distributed, so you can copy it::
+
+    $ cp config.py.dist config.py
+
+And modify it so as to fit your local data. If you're using MySQL or sqlite, the
+following script deploys the database, creating the required user as defined in
+the configuration file::
+
+    $ python deploy.py -cdu
+
+Finally, you can test it by running::
+
+    $ python run.py
+
+If you open your web browser in the `http://localhost:5000/`_ address, you
+should see the system up and running in development mode.
 
 Development
 ```````````
