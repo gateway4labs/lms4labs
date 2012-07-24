@@ -200,18 +200,22 @@ labmanager is installed, and activate it::
     (or, on Windows)
     $ . env\scripts\activate
 
-Install all the dependencies::
+Install all the requirements. They are detailed requirements.txt file, so you
+can install them all by running::
 
-    $ pip install Flask Flask-SQLAlchemy Flask-WTF SQLAlchemy pymySQL pymysql_sa pyflakes cherrypy
+    $ pip install -r requirements.txt
 
 At this point, everything is ready to be deployed. First, we should add the
 configuration file. A sample one is distributed, so you can copy it::
 
     $ cp config.py.dist config.py
 
-And modify it so as to fit your local data. If you're using MySQL or sqlite, the
-following script deploys the database, creating the required user as defined in
-the configuration file::
+And modify it so as to fit your local data. If the engine is sqlite, you don't
+need to worry about the connection DB configuration (username, password,
+hostname, etc.). If you are using MySQL, you don't need to create the user and
+the database by your own, since that is managed by the deployment script itself.
+Just check that you're fine with the credentials you're going to establish in
+the config.py file. Then you can create the database by running::
 
     $ python deploy.py -cdu
 
@@ -219,17 +223,51 @@ Finally, you can test it by running::
 
     $ python run.py
 
-If you open your web browser in the `http://localhost:5000/`_ address, you
-should see the system up and running in development mode.
+If you open `<http://localhost:5000/>`_ with your web browser, you should see
+the system up and running in development mode. You'll be able to use the
+username  *admin* and the password *password*.
 
 Development
 ```````````
 
-asdfad
+The development mode is a Flask mode used during the application development. By
+running::
 
-Blah blah some code here::
+    $ python run.py
 
-   print "hello world"
+You are using that mode. It is a risky mode since users might be able to execute
+random code in the server, so use it only while developing or testing a
+particular condition.
+
+While using the development mode, the application will be automatically reloaded
+every time you modify any code file, and if an exception is raised, you'll be
+able to see the complete trace and even evaluate conditions through the web
+browser by writing Python code in any stack level. To see further information,
+please refer to the `official flask documentation
+<http://flask.pocoo.org/docs/quickstart/#debug-mode>`_.
+
+Production
+``````````
+
+In order to run the system in production, there are two ways, as previously
+detailed. The easiest mode is to rely on a Python web server such as `cherrypy
+<http://cherrypy.org>`_. A very simple example is provided in the run_cherry.py
+script, which basically does the following::
+
+    from cherrypy import wsgiserver
+    from labmanager import app
+
+    PORT = 8080
+    server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', PORT), app)
+    server.start()
+
+This code is enough for deploying a threaded HTTP server. If you want to work
+with this server behind an Apache server, you can still use the Apache
+`mod_proxy <http://httpd.apache.org/docs/2.2/mod/mod_proxy.html>`_ module, which
+comes by default with Apache.
+
+
+The other approach is using WSGI in the web server. In the case of Apache...
 
 Installation on LMSs
 --------------------
