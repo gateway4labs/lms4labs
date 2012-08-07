@@ -22,6 +22,7 @@ If you're interested in adding a new LMS or a new RLMS, you'll find a reference 
 .. toctree::
    :maxdepth: 2
 
+   development
    lms_api
    rlms_api
 

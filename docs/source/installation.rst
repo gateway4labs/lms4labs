@@ -306,9 +306,15 @@ to modify the *run_wsgi.wsgi* script to change the project directory.
 Installation on LMSs
 --------------------
 
-Blah blah
+This section details how the plug-in can be installed in a set of Learning
+Management Systems. If you have your own LMS, refer to the development section.
 
 Installation on Moodle
 ``````````````````````
+
+blah blah blah
+
+Installation on .LRN
+````````````````````
 
 blah blah blah
