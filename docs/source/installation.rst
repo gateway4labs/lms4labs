@@ -261,13 +261,47 @@ script, which basically does the following::
     server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', PORT), app)
     server.start()
 
-This code is enough for deploying a threaded HTTP server. If you want to work
-with this server behind an Apache server, you can still use the Apache
-`mod_proxy <http://httpd.apache.org/docs/2.2/mod/mod_proxy.html>`_ module, which
-comes by default with Apache.
+This code is enough for deploying a threaded HTTP server. So as to run it, you
+must run::
 
+    $ python run_cherry.py
 
-The other approach is using WSGI in the web server. In the case of Apache...
+If you want to work with this server behind an Apache server, you can still use
+the Apache `mod_proxy <http://httpd.apache.org/docs/2.2/mod/mod_proxy.html>`_
+module, which comes by default with Apache. Refer to the Apache documentation
+for details, but this is an example of configuration (once the module has been
+enabled)::
+
+    ProxyVia On
+    ProxyPass        /lms4labs http://localhost:8080/lms4labs
+    ProxyPassReverse /lms4labs http://localhost:8080/lms4labs
+
+The other approach is using WSGI in the web server. Refer to the `Flask
+documentation on how to deploy it <http://flask.pocoo.org/docs/deploying/>`_. In
+the particular case of Apache, the documentation on `how WSGI works on Apache
+<http://code.google.com/p/modwsgi/>`_ is also very good. 
+
+As a summary for the deployment on Apache: first, download mod_wsgi. In Linux
+systems, it may be available in the package repositories (e.g. in Ubuntu, you
+may install the *libapache2-mod-wsgi* package). In Windows, the process is
+documented `here
+<http://code.google.com/p/modwsgi/wiki/InstallationOnWindows>`_. Once mod_wsgi
+is installed in Apache, the following configuration may work::
+
+    WSGIDaemonProcess labmanager user=weblab group=weblab threads=5
+    WSGIScriptAlias /lms4labs /PATH/TO/lms4labs/labmanager/run_wsgi.wsgi
+    WSGIRestrictStdout Off
+    WSGIPassAuthorization On
+
+    <Directory /PATH/TO/lms4labs/labmanager/>
+        WSGIProcessGroup labmanager
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+Being /PATH/TO/lms4labs/ the lms4labs root project. Additionally, you will need
+to modify the *run_wsgi.wsgi* script to change the project directory.
 
 Installation on LMSs
 --------------------
