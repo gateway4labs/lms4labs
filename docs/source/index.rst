@@ -12,6 +12,8 @@ Welcome to the lms4labs project documentation.
    :scale: 30
    :align: center
 
+(yeah, we don't like the logo either; if you have a better proposal contact us ;-) )
+
 .. include:: contents.rst.inc
 
 
