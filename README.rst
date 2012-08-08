@@ -1,6 +1,6 @@
 lms4labs is a joint effort to integrate remote laboratories (such as `iLabs
 <http://ilab.mit.edu/wiki>`_, `WebLab-Deusto <http://www.weblab.deusto.es/>`_ or
-`Sahara <http://sourceforge.net/projects/labshare-sahara/>`_) on Learning
+`Labshare Sahara <http://sourceforge.net/projects/labshare-sahara/>`_) on Learning
 Management Systems.
 
 It is still in an early stage and no download is yet available. You
