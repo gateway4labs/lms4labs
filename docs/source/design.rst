@@ -55,8 +55,8 @@ evils. However, so as to support the principles mentioned above, this code:
 Most of the logic should therefore be located in other component. This component
 has been named *labmanager*, as detailed in the following section.
 
-Architecture
-~~~~~~~~~~~~
+Architecture overview
+~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/general_architecture.png
    :scale: 50
@@ -82,8 +82,23 @@ a new RLMS is aimed, a new plug-in for that RLMS is required in the LabManager,
 but it has no impact on the LMSs.
 
 Let's detail a typical scenario. *University A* uses Moodle (LMS), WebLab-Deusto
-(RLMS 1) and MIT iLabs (RLMS 2). It will install a Moodle plug-in in the IT
-services. THIS SECTION HAS NOT YET BEEN WRITTEN.
+(RLMS 1) and MIT iLabs (RLMS 2). They will deploy a LabManager in
+*labmanager.universitya.edu*. 
+
+Then, they will install the lms4labs plug-in for Moodle in their Moodle system.
+While installing the plug-in, they will have to configure three arguments:
+
+#. LabManager URL, pointing to the Lab Manager. Example:
+   *http://labmanager.universitya.edu/lms4labs/*
+#. LabManager username and password, which will be used by the LabManager to
+   identify itself. This is not the password of any user or administrator, it is
+   just a simple token exchanged among both systems. Example: 'lm_uniA' and
+   password: 'imthelabmanager'.
+#. LMS username and password, which will be used by the LMS to identify itself
+   in the LabManager. Again, this is not the password of any LMS user, but it is
+   just a token. Example: 'lms_uniA' and password: 'imthelms'.
+
+THIS SECTION HAS NOT YET BEEN WRITTEN.
 
 LMS to LabManager protocol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,11 +108,11 @@ THIS SECTION HAS NOT YET BEEN WRITTEN
 Requests::
 
     POST /lms4labs/labmanager/requests/ HTTP/1.0
-    Authorization: Basic ASDFASDF (usuario y clave del LMS)
+    Authorization: Basic ASDFASDF (LMS token)
 
     {
-       "user-id"    : "elio",
-       "full-name"  : "Elio Sancristobal",
+       "user-id"    : "jsmith",
+       "full-name"  : "John Smith",
        "is-admin"   : true, 
        "user-agent" : "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0",
        "origin-ip"  : "192.168.1.1",
@@ -116,16 +131,16 @@ Authenticate::
     GET /lms4labs/lms/authenticate HTTP/1.0
 
     POST /lms4labs/labmanager/lms/admin/authenticate/ HTTP/1.0
-    Authorization: Basic ASDFASDF (usuario y clave del LMS)
+    Authorization: Basic ASDFASDF (LMS token)
 
     {
-        "full-name" : "Elio Sancristobal"
+        "full-name" : "John Smith"
     }
 
 Course listing::
 
     GET /lms4labs/lms/list?q=elect&start=0 HTTP/1.1
-    Authorization: Basic ASDFASDF (usuario y clave del Lab Manager)
+    Authorization: Basic ASDFASDF (LabManager token)
 
 Response::
 
@@ -135,18 +150,18 @@ Response::
        "per-page" :    10,
        "courses" : [
 
-             {
+         {
             "id"   : "3465", 
-            "name" : "Arquitectura Computadores"
-             },
+            "name" : "Computers Architecture"
+         },
          {
                     "id"   : "2854",
-                    name"  : "Laboratorio de Electrónica"
-             },
-             {
+                    name"  : "Electronics Laboratory"
+         },
+         {
             "id"   : "2854", 
             "name" : "IEEE Student Branch"
-             },
+         },
        ],
     }
 
