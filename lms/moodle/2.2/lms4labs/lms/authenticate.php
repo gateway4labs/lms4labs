@@ -2,8 +2,8 @@
 
 
 
-require_once("../../../../config.php");
-require_once("../lib/HttpClient.class.php");
+require_once("../../../config.php");
+require_once("lib/HttpClient.class.php");
 
 global $CFG, $USER;
 
