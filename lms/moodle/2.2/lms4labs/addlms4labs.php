@@ -26,8 +26,8 @@
 
             if ($DB->record_exists("lms4labs", $cond)) {
                 $aux=$DB->get_record('lms4labs',$cond);
-            $record->id=$aux->id;
-            $DB->update_record('lms4labs', $record, false);
+                $record->id=$aux->id;
+                $DB->update_record('lms4labs', $record, false);
             } else {
                 $DB->insert_record('lms4labs', $record, false);
             }
