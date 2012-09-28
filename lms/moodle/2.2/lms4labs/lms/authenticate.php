@@ -2,37 +2,22 @@
 
 
 
-require_once("../../../../config.php");
-require_once("../lib/HttpClient.class.php");
+require_once("../../../config.php");
+require_once("lib/HttpClient.class.php");
+require_once("../util.php");
 
 global $CFG, $USER;
 
-
-$auxname=$USER->firstname. " " . $USER->lastname ;
-
-
-$cond = array("name" => "LMS-User");
-$auxuser=$DB->get_record('lms4labs',$cond);
-$cond1 = array("name" => "LMS-Password");
-$auxpass=$DB->get_record('lms4labs',$cond1);
-
 if (is_siteadmin()) {
-      $request_data = array( 
-                	"full-name"  => $auxname,
-      ); 
+    $moodle_name = $USER->firstname. " " . $USER->lastname ;
+    $request_data = array( "full-name"  => $moodle_name ); 
 	$request= json_encode($request_data);
-	$client = new HttpClient('localhost:5000');
-	$client->setAuthorization($auxuser->value, $auxpass->value);
-	$client->post('/lms4labs/labmanager/lms/admin/authenticate/',$request);
-	$content = $client->getContent(); 
-	echo $content; 	
+	echo l4l_authenticate($request);	
 }
 else
  {
 	echo "error:You don't have permissions";
 }
-
-
 
 
 
