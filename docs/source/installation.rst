@@ -288,7 +288,7 @@ documented `here
 <http://code.google.com/p/modwsgi/wiki/InstallationOnWindows>`_. Once mod_wsgi
 is installed in Apache, the following configuration may work::
 
-    WSGIDaemonProcess labmanager user=weblab group=weblab threads=5
+    WSGIDaemonProcess labmanager user=weblab group=weblab threads=5 python-path=/PATH/TO/ENV/lib/pythonVERSION/site-packages/
     WSGIScriptAlias /lms4labs /PATH/TO/lms4labs/labmanager/run_wsgi.wsgi
     WSGIRestrictStdout Off
     WSGIPassAuthorization On
