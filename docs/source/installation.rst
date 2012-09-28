@@ -95,7 +95,7 @@ Or using your package manager in Linux systems::
 
 And then, you can create an environment by running::
     
-    $ virtualenv env1
+    $ virtualenv --no-site-packages env1
     New python executable in env1/bin/python
     Installing distribute........done.
     Installing pip...............done.
@@ -195,7 +195,7 @@ labmanager code::
 Then, create an environment called *env* in the same directory where the
 labmanager is installed, and activate it::
 
-    $ virtualenv env
+    $ virtualenv --no-site-packages env
     $ . env/bin/activate
     (or, on Windows)
     $ . env\scripts\activate
@@ -313,6 +313,14 @@ Installation on Moodle
 ``````````````````````
 
 blah blah blah
+
+Copy the directory lms/moodle/2.2/lms4labs into th moodle directory. This way,
+going to the lms4labs directory, it should exist the path
+*blocks/lms4labs/version.php*, for instance.
+
+Then, open in the web browser the following link:
+
+* http://localhost/moodle/blocks/lms4labs/addlms4labs.php
 
 Installation on .LRN
 ````````````````````
