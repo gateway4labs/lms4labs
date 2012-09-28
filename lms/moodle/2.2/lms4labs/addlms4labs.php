@@ -1,7 +1,8 @@
 <?php
 
     require_once('../../config.php');
-    require_once($CFG->libdir.'/adminlib.php');
+    require_once($CFG->libdir . '/adminlib.php');
+    require_once($CFG->libdir . '/formslib.php');
     require_login();
 
     global $DB, $COURSE, $USER;
@@ -16,38 +17,30 @@
    
     echo $OUTPUT->header();
 
-    if($_SERVER['REQUEST_METHOD'] == "POST") {
-        function lms_store_field($field, $value) {
-            global $DB;
-            $cond = array("name" => $field);
-            $record = new stdClass();
-            $record->name  = $field;
-            $record->value = $value;
+    class labmanager_form extends moodleform {
+     
+        function definition() {
+            $mform =& $this->_form; 
 
-            if ($DB->record_exists("lms4labs", $cond)) {
-                $aux=$DB->get_record('lms4labs',$cond);
-                $record->id=$aux->id;
-                $DB->update_record('lms4labs', $record, false);
-            } else {
-                $DB->insert_record('lms4labs', $record, false);
+            $mform->addElement('header',   'lms4labs configuration', 'lms4labs configuration');
+
+            $mform->addElement('text',     'laburl',  'LabManager URL',      'maxlength="255" size="50" ');
+            $mform->addElement('text',     'labuser', 'LabManager user',     'maxlength="255" size="50" ');
+            $mform->addElement('password', 'labpass', 'LabManager password', 'maxlength="255" size="50" ');
+            $mform->addElement('text',     'lmsuser', 'LMS user',            'maxlength="255" size="50" ');
+            $mform->addElement('password', 'lmspass', 'LMS password',        'maxlength="255" size="50" ');
+
+            $mform->closeHeaderBefore('buttonar');
+
+            $this->add_action_buttons();
+
+            foreach(array('laburl', 'labuser', 'lmsuser') as $field) {
+                $mform->setDefault($field, $this->_customdata[$field]);
             }
         }
-
-
-        $laburl=$_POST['f1laburl'];
-        $labuser=$_POST['f1labuser'];
-        $labpass=$_POST['f1labpass'];
-        $lmsuser=$_POST['f1lmsuser'];
-        $lmspass=$_POST['f1lmspass'];
-
-        lms_store_field("Labmanager-Url", $laburl);
-        lms_store_field("Labmanager-User", $labuser);
-        if($labpass != "")
-            lms_store_field("Labmanager-Password", md5($labpass));
-        lms_store_field("LMS-User", $lmsuser);
-        if($lmspass != "")
-            lms_store_field("LMS-Password", $lmspass);
     }
+
+    $mform = new labmanager_form();
 
     function lms_retrieve_field($field) {
         global $DB;
@@ -61,9 +54,46 @@
 
     $laburl  = lms_retrieve_field("Labmanager-Url");
     $labuser = lms_retrieve_field("Labmanager-User");
-    $lmsuser = lms_retrieve_field("LMS-User"); 
+    $lmsuser = lms_retrieve_field("LMS-User");
+    $initial_data = array('laburl' => $laburl, 'labuser' => $labuser, 'lmsuser' => $lmsuser);
 
-    $validation = "";
+    if ($mform->is_cancelled()) {
+        $mform->set_data($initial_data);
+        $mform->display();
+
+    } else if ( $fromform = $mform->get_data()) {
+        $laburl = $fromform->laburl;
+        function lms_store_field($field, $value) {
+            global $DB;
+            $cond = array("name" => $field);
+            $record = new stdClass();
+            $record->name  = $field;
+            $record->value = $value;
+
+            if ($DB->record_exists("lms4labs", $cond)) {
+                $cur = $DB->get_record('lms4labs',$cond);
+                $record->id = $cur->id;
+                $DB->update_record('lms4labs', $record, false);
+            } else {
+                $DB->insert_record('lms4labs', $record, false);
+            }
+        }
+
+        lms_store_field("Labmanager-Url",  $fromform->laburl);
+        lms_store_field("Labmanager-User", $fromform->labuser);
+        lms_store_field("LMS-User", $fromform->lmsuser);
+
+        if($fromform->labpass != "")
+            lms_store_field("Labmanager-Password", md5($fromform->labpass));
+
+        if($fromform->lmspass != "")
+            lms_store_field("LMS-Password", $fromform->lmspass);
+
+        $mform->display();
+    } else {
+        $mform->set_data($initial_data);
+        $mform->display();
+    } 
 
     if($laburl != "") {
         
@@ -73,79 +103,12 @@
         $response = l4l_authenticate($request);	
 
         if (substr($response, 0, 4) == 'http') {
-            $validation = "Configuration successfully validated!";
+            echo "Configuration successfully validated!";
         } else {
-            $validation = "Configuration is failing. If you have not configured the LabManager, this might be fine, just come back to this page to ensure yourself.";
+            echo "Configuration is failing. If you have not configured the LabManager, this might be fine, just come back to this page to ensure yourself.";
         }
     }
-?>
 
-<h1><center>Connection Data</center></h1>
-
-
-<form name="form" method="post" action="addlms4labs.php" id="mform1" class="mform">
-    <fieldset class="clearfix"  id="moodle">
-        <legend class="ftoggler">lms4labs configuration</legend>
-        <div class="fcontainer clearfix">
-      
-            <div class="fitem">
-                <div class="fitemtitle">
-                    <label for="labmanager_url">Labmanager URL</label>
-                </div>
-                <div class="felement ftext">
-                    <input id="labmanager_url" type="text" name="f1laburl" size="50"  maxlength="255" value="<?php  p($laburl) ?>" />
-                </div>
-            </div>
-
-            <div class="fitem">
-                <div class="fitemtitle">
-                    <label for="labmanager_user">Labmanager username</label>
-                </div>
-                <div class="felement ftext">
-                    <input  id="labmanager_user" type="text" name="f1labuser" size="50"  maxlength="255" value="<?php  p($labuser) ?>" />
-                </div>
-            </div>
-
-            <div class="fitem">
-                <div class="fitemtitle">
-                    <label for="labmanager_password">Labmanager password:</label>
-                </div>
-                <div class="felement ftext">
-                    <input  id="labmanager_password" type="password" name="f1labpass" size="50"  maxlength="255" />
-                </div>
-            </div>
-
-            <div class="fitem">
-                <div class="fitemtitle">
-                    <label for="lms_user">LMS user</label>
-                </div>
-                <div class="felement ftext">
-                    <input  id="lms_user" type="text" name="f1lmsuser" size="50"  maxlength="255" value="<?php  p($lmsuser) ?>" />
-                </div>
-            </div>
-
-            <div class="fitem">
-                <div class="fitemtitle">
-                    <label for="lms_password">LMS password</label>
-                </div>
-                <div class="felement ftext">
-                    <input  id="lms_password" type="password" name="f1lmspass" size="50"  maxlength="20" />
-                </div>
-            </div>
- 
-            <div class="fitem">
-                <div class="fitemtitle">
-                    <label for="id_submitbutton"></label>
-                </div>
-                <div class="felement fsubmit">
-                    <input name="action" type="submit" value="Add"  id="id_submitbutton" />
-                </div>
-            </div>
-        </div>
-    </fieldset>
-</form>
-
-<?php 
     echo $validation;
     echo $OUTPUT->footer(); 
 ?>
