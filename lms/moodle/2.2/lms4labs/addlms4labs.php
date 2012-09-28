@@ -43,7 +43,7 @@
         lms_store_field("Labmanager-Url", $laburl);
         lms_store_field("Labmanager-User", $labuser);
         if($labpass != "")
-            lms_store_field("Labmanager-Password", $labpass);
+            lms_store_field("Labmanager-Password", md5($labpass));
         lms_store_field("LMS-User", $lmsuser);
         if($lmspass != "")
             lms_store_field("LMS-Password", $lmspass);
@@ -84,24 +84,69 @@
 
 
 <form name="form" method="post" action="addlms4labs.php" id="mform1" class="mform">
-<fieldset class="clearfix"  id="moodle">
-<legend class="ftoggler">lms4labs configuration</legend>
-    <div class="fcontainer clearfix">
+    <fieldset class="clearfix"  id="moodle">
+        <legend class="ftoggler">lms4labs configuration</legend>
+        <div class="fcontainer clearfix">
       
-    <div class="fitem"><div class="fitemtitle"><label for="labmanager_url">Labmanager URL</label></div><div class="felement ftext"><input id="labmanager_url" type="text" name="f1laburl" size="50"  maxlength="255" value="<?php  p($laburl) ?>" /></div></div>
-    <div class="fitem"><div class="fitemtitle"><label for="labmanager_user">Labmanager username</label></div><div class="felement ftext"><input  id="labmanager_user" type="text" name="f1labuser" size="50"  maxlength="255" value="<?php  p($labuser) ?>" /></div></div>
-    <div class="fitem"><div class="fitemtitle"><label for="labmanager_password">Labmanager password:</label></div><div class="felement ftext"><input  id="labmanager_password" type="password" name="f1labpass" size="50"  maxlength="255" /></div></div>
-    <div class="fitem"><div class="fitemtitle"><label for="lms_user">LMS user</label></div><div class="felement ftext"><input  id="lms_user" type="text" name="f1lmsuser" size="50"  maxlength="255" value="<?php  p($lmsuser) ?>" /></div></div>
-    <div class="fitem"><div class="fitemtitle"><label for="lms_password">LMS password</label></div><div class="felement ftext"><input  id="lms_password" type="password" name="f1lmspass" size="50"  maxlength="20" /></div></div>
+            <div class="fitem">
+                <div class="fitemtitle">
+                    <label for="labmanager_url">Labmanager URL</label>
+                </div>
+                <div class="felement ftext">
+                    <input id="labmanager_url" type="text" name="f1laburl" size="50"  maxlength="255" value="<?php  p($laburl) ?>" />
+                </div>
+            </div>
+
+            <div class="fitem">
+                <div class="fitemtitle">
+                    <label for="labmanager_user">Labmanager username</label>
+                </div>
+                <div class="felement ftext">
+                    <input  id="labmanager_user" type="text" name="f1labuser" size="50"  maxlength="255" value="<?php  p($labuser) ?>" />
+                </div>
+            </div>
+
+            <div class="fitem">
+                <div class="fitemtitle">
+                    <label for="labmanager_password">Labmanager password:</label>
+                </div>
+                <div class="felement ftext">
+                    <input  id="labmanager_password" type="password" name="f1labpass" size="50"  maxlength="255" />
+                </div>
+            </div>
+
+            <div class="fitem">
+                <div class="fitemtitle">
+                    <label for="lms_user">LMS user</label>
+                </div>
+                <div class="felement ftext">
+                    <input  id="lms_user" type="text" name="f1lmsuser" size="50"  maxlength="255" value="<?php  p($lmsuser) ?>" />
+                </div>
+            </div>
+
+            <div class="fitem">
+                <div class="fitemtitle">
+                    <label for="lms_password">LMS password</label>
+                </div>
+                <div class="felement ftext">
+                    <input  id="lms_password" type="password" name="f1lmspass" size="50"  maxlength="20" />
+                </div>
+            </div>
  
-
-    <div class="fitem"><div class="fitemtitle"><label for="id_submitbutton"> </label></div><div class="felement fsubmit"><input name="action" type="submit" value="Add"  id="id_submitbutton" /></div></div>
-    </div>
-</fieldset>
+            <div class="fitem">
+                <div class="fitemtitle">
+                    <label for="id_submitbutton"></label>
+                </div>
+                <div class="felement fsubmit">
+                    <input name="action" type="submit" value="Add"  id="id_submitbutton" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
 </form>
-    <?php p($validation) ?>
 
-<?php    
-    echo $OUTPUT->footer();
+<?php 
+    echo $validation;
+    echo $OUTPUT->footer(); 
 ?>
 

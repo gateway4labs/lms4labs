@@ -16,7 +16,7 @@ global $DB;
 $labmanager_user     = l4l_retrieve_field("Labmanager-User");
 $labmanager_password = l4l_retrieve_field("Labmanager-Password");
 
-if ($_SERVER['PHP_AUTH_USER'] != $labmanager_user || $_SERVER['PHP_AUTH_PW'] != $labmanager_password) {
+if ($_SERVER['PHP_AUTH_USER'] != $labmanager_user || md5($_SERVER['PHP_AUTH_PW']) != $labmanager_password) {
 	echo "Error: invalid username or password";
 	exit;
 }
