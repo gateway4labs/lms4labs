@@ -24,11 +24,12 @@
 
             $mform->addElement('header',   'lms4labs configuration', 'lms4labs configuration');
 
-            $mform->addElement('text',     'laburl',  'LabManager URL',      'maxlength="255" size="50" ');
-            $mform->addElement('text',     'labuser', 'LabManager user',     'maxlength="255" size="50" ');
-            $mform->addElement('password', 'labpass', 'LabManager password', 'maxlength="255" size="50" ');
-            $mform->addElement('text',     'lmsuser', 'LMS user',            'maxlength="255" size="50" ');
-            $mform->addElement('password', 'lmspass', 'LMS password',        'maxlength="255" size="50" ');
+            $mform->addElement('text',     'laburl',      'LabManager URL',      'maxlength="255" size="50" ');
+            $mform->addElement('static',   'description', '',                    'E.g. http://localhost:5000/lms4labs (no trailing /) ');
+            $mform->addElement('text',     'labuser',     'LabManager user',     'maxlength="255" size="50" ');
+            $mform->addElement('password', 'labpass',     'LabManager password', 'maxlength="255" size="50" ');
+            $mform->addElement('text',     'lmsuser',     'LMS user',            'maxlength="255" size="50" ');
+            $mform->addElement('password', 'lmspass',     'LMS password',        'maxlength="255" size="50" ');
 
             $mform->closeHeaderBefore('buttonar');
 
