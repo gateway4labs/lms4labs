@@ -13,6 +13,7 @@ RLMSs to it.
    design
    installation
    usage_labmanager_admin
+   usage_lms_admin
    usage_teacher
    quickstart
 
