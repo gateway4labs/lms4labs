@@ -5,7 +5,7 @@ Installation
 
 Within the lms4labs project, two main components need to be installed:
  * The LabManager, which is the software system 
- * The LMS plug-in
+ * The LMS plug-in (see the Usage section of Moodle for Moodle)
 
 Cardinality:
  * There should be a LabManager representing each university or secondary
@@ -303,26 +303,3 @@ is installed in Apache, the following configuration may work::
 Being /PATH/TO/lms4labs/ the lms4labs root project. Additionally, you will need
 to modify the *run_wsgi.wsgi* script to change the project directory.
 
-Installation on LMSs
---------------------
-
-This section details how the plug-in can be installed in a set of Learning
-Management Systems. If you have your own LMS, refer to the development section.
-
-Installation on Moodle
-``````````````````````
-
-blah blah blah
-
-Copy the directory lms/moodle/2.2/lms4labs into th moodle directory. This way,
-going to the lms4labs directory, it should exist the path
-*blocks/lms4labs/version.php*, for instance.
-
-Then, open in the web browser the following link:
-
-* http://localhost/moodle/blocks/lms4labs/addlms4labs.php
-
-Installation on .LRN
-````````````````````
-
-blah blah blah
