@@ -9,7 +9,7 @@ Welcome to lms4labs's documentation!
 Welcome to the lms4labs project documentation.
 
 .. image:: /_static/logo.png
-   :scale: 30
+   :width: 200 px
    :align: center
 
 (yeah, we don't like the logo either; if you have a better proposal contact us ;-) )

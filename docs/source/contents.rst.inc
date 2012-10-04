@@ -12,6 +12,7 @@ RLMSs to it.
    vocabulary
    design
    installation
+   usage_teacher
    quickstart
 
 API Reference
