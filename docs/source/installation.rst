@@ -189,7 +189,7 @@ application.
 First of all, download the source code of the lms4labs project and go to the
 labmanager code::
 
-    $ git clone https://github.com/porduna/lms4labs/
+    $ git clone https://github.com/lms4labs/lms4labs/
     $ cd lms4labs/labmanager
 
 Then, create an environment called *env* in the same directory where the
