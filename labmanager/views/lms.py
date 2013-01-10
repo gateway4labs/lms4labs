@@ -18,23 +18,26 @@ import json
 import cgi
 import traceback
 from functools import wraps
-
+from sets import Set
+from yaml import load as yload
 # 
 # Flask imports
 # 
-from flask import Response, render_template, request, g
+from flask import Response, render_template, request, g, redirect, url_for, session
 
 # 
 # LabManager imports
 # 
 from labmanager.database import db_session
-from labmanager.models   import LMS, PermissionOnLaboratory
+from labmanager.models   import LMS, PermissionOnLaboratory, Course, PermissionOnCourse
 from labmanager.rlms     import get_manager_class
 
 from labmanager import app
 from labmanager.views import get_json
 
+from ims_lti_py import ToolProvider
 
+config = yload(open('labmanager/config.yaml'))
 ###############################################################################
 # 
 # 
@@ -48,9 +51,28 @@ from labmanager.views import get_json
 # LMS authentication
 # 
 def check_lms_auth(lmsname, password):
-    hash_password = hashlib.new("sha", password).hexdigest()
+
+    if 'oauth_consumer_key' in request.form:
+        lms = db_session.query(LMS).filter_by(lms_login = lmsname).first()
+        # check for nonce
+        # check for old requests
+
+        if lms is None:
+            return None
+
+        secret = lms.lms_password
+        tool_provider = ToolProvider(lmsname, secret, request.form.to_dict())
+
+        if (tool_provider.valid_request(request) == False):
+            return None
+        hash_password = secret
+
+    else:
+        hash_password = hashlib.new("sha", password).hexdigest()
+
     lms = db_session.query(LMS).filter_by(lms_login = lmsname, lms_password = hash_password).first()
     g.lms = lmsname
+    session['lms'] = lmsname
     return lms is not None
 
 def requires_lms_auth(f):
@@ -61,16 +83,23 @@ def requires_lms_auth(f):
                     'You have to login with proper credentials', 401,
                     {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
-        auth = request.authorization
-        if not auth:
-            json_data = get_json()
-            if json_data is None:
-                return login_required
-            username = json_data.get('lms_username','')
-            password = json_data.get('lms_password','')
+        oauth = None
+        try:
+            oauth = request.form['oauth_consumer_key']
+        except:
+            auth = request.authorization
+            if not auth:
+                json_data = get_json()
+                if json_data is None:
+                    return login_required
+                username = json_data.get('lms_username','')
+                password = json_data.get('lms_password','')
+            else:
+                username = auth.username
+                password = auth.password
         else:
-            username = auth.username
-            password = auth.password
+            username = request.form['oauth_consumer_key']
+            password = ""
 
         if not check_lms_auth(username, password):
             return login_required
@@ -188,4 +217,131 @@ def requests():
         else:
             return 'error:%s' % error_msg
 
+@app.route("/lti/admin/", methods = ['POST'])
+@requires_lms_auth
+def admin_ims():
+    response = None
 
+    consumer_key = request.form['oauth_consumer_key']
+    db_lms = db_session.query(LMS).filter_by(lms_login = g.lms).first()
+    context_id = request.form['context_id']
+    context_label = request.form['context_label']
+
+    data = { 'user_agent' : request.user_agent,
+             'origin_ip' : request.remote_addr,
+             'lms' : db_lms.name,
+             'lms_id' : db_lms.id,
+             'context_label' : context_label,
+             'context_id' : context_id,
+             }
+
+    # Defined by the standard. After this comes the role of the user as in
+    # 'urn:lti:sysrole:ims/lis/Administrator' or 'urn:lti:sysrole:ims/lis/SysAdmin'
+    urn_role_base = 'urn:lti:sysrole:ims/lis/'
+    roles = Set()
+
+    split_roles = request.form['roles'].split(',')
+    for role in split_roles:
+        if role.startswith(urn_role_base):
+            roles.add(role[len(urn_role_base):])
+
+    admin_roles = Set(config['standard_urn_admin_roles'])
+    current_users_roles = roles & admin_roles # Set intersection
+
+    if len(current_users_roles) > 0:
+        data['role'] = current_users_roles.pop() # Returns an arbitrary element
+        data['rlms'] = {}
+        data['rlms_ids'] = {}
+
+        db_course = db_session.query(Course).filter_by(lms = db_lms, course_id = context_id).first()
+        if db_course is None:
+            db_course = Course(db_lms, context_id, context_label)
+            db_session.add(db_course)
+            db_session.commit()
+
+        response = redirect(url_for('lms_admin_courses_permissions', course_id = db_course.id))
+
+    else:
+        data['role'] = split_roles[0]
+        response = render_template('lti/unknown_role.html', info=data)
+
+    return response
+
+
+@app.route("/lti/", methods = ['POST'])
+@requires_lms_auth
+def start_ims():
+    response = ""
+
+    current_role = Set(request.form['roles'].split(','))
+    req_course_data = request.form['lis_result_sourcedid']
+    db_lms = db_session.query(LMS).filter_by(lms_login = g.lms).first()
+    context_id = request.form['context_id']
+
+    data = { 'user_agent' : request.user_agent,
+             'origin_ip' : request.remote_addr,
+             'lms' : g.lms,
+             'lms_id' : db_lms.id,
+             'context_label' : request.form['context_label'],
+             'context_id' : context_id,
+             'access' : False
+             }
+
+    db_course = db_session.query(Course).filter_by(lms = db_lms, course_id = context_id).first()
+    course_experiments = db_session.query(PermissionOnCourse).filter_by(course_id = db_course.id).all()
+
+    data['context_experiments'] = [exp.permission_on_lab for exp in course_experiments]
+
+    if ('Instructor' in current_role):
+        data['role'] = 'Instructor'
+
+        if course_experiments:
+            response = render_template('lti/experiments.html', info=data)
+        else:
+            response = render_template('lti/instructions.html', info=data)
+
+    elif ('Learner' in current_role):
+        data['role'] = 'Learner'
+
+        if course_experiments:
+            response = render_template('lti/experiments.html', info=data)
+        else:
+            response = render_template('lti/no_experiments_info.html', info=data)
+
+    else:
+        response = render_template('lti/unknown_role.html', info=data)
+
+    return response
+
+@app.route("/lti/experiment/", methods = ['POST'])
+def lti_launch_experiment():
+
+    experiment_identifier = None
+    try:
+        experiment_identifier = request.form['identifier']
+    except:
+        return "Reload and select an experiment"
+
+    db_lms = db_session.query(LMS).filter_by(lms_login = session['lms']).first()
+    permission_on_lab = db_session.query(PermissionOnLaboratory).filter_by(lms_id = db_lms.id, local_identifier = experiment_identifier).first()
+
+    courses_configurations = []
+    courses = []
+    for course_permission in permission_on_lab.course_permissions:
+        if course_permission.course.course_id in courses:
+            # Let the server choose among the best possible configuration
+            courses_configurations.append(course_permission.configuration)
+    lms_configuration = permission_on_lab.configuration
+    db_laboratory   = permission_on_lab.laboratory
+    db_rlms         = db_laboratory.rlms
+    db_rlms_version = db_rlms.rlms_version
+    db_rlms_type    = db_rlms_version.rlms_type
+    user_agent = str(request.user_agent)
+    origin_ip = request.remote_addr
+    author = ""
+    referer = ""
+
+    ManagerClass = get_manager_class(db_rlms_type.name, db_rlms_version.version)
+    remote_laboratory = ManagerClass(db_rlms.configuration)
+    reservation_url = remote_laboratory.reserve(db_laboratory.laboratory_id, author, lms_configuration, courses_configurations, user_agent, origin_ip, referer)
+    return redirect(reservation_url)
