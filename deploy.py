@@ -23,27 +23,28 @@ except ImportError:
     print >> sys.stderr, "Missing config.py. Copy config.py.dist into config.py"
     sys.exit(-1)
 
-from config import USERNAME, PASSWORD, HOST, DBNAME
+heroku = os.environ.get('HEROKU', None)
+if heroku is None:
+    from config import USERNAME, PASSWORD, HOST, DBNAME
 
-from config import ENGINE
-if ENGINE == 'mysql':
-    try:
-        from config import USE_PYMYSQL
-    except:
-        USE_PYMYSQL = False
-    if USE_PYMYSQL:
-        import pymysql as dbi
+    from config import ENGINE
+    if ENGINE == 'mysql':
+        try:
+            from config import USE_PYMYSQL
+        except:
+            USE_PYMYSQL = False
+            if USE_PYMYSQL:
+                import pymysql as dbi
+            else:
+                import MySQLdb as dbi
+    elif ENGINE == 'sqlite':
+        import sqlite3 as dbi
     else:
-        import MySQLdb as dbi
-elif ENGINE == 'sqlite':
-    import sqlite3 as dbi
-else:
-    print >> sys.stderr, "Unsupported engine %s. You will have to create the database and the users by your own." % ENGINE 
+        print >> sys.stderr, "Unsupported engine %s. You will have to create the database and the users by your own." % ENGINE 
+        ROOT_USERNAME = None
+        ROOT_PASSWORD = None
 
 from labmanager.database import init_db, db_session, add_sample_users
-
-ROOT_USERNAME = None
-ROOT_PASSWORD = None
 
 def create_user():
     if ENGINE == 'mysql':
