@@ -6,5 +6,6 @@ pymySQL
 pymysql_sa
 pyflakes
 cherrypy
+psycopg2
 ims-lti-py
 pyyaml
