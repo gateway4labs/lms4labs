@@ -273,21 +273,23 @@ def admin_ims():
 def start_ims():
     response = ""
 
-    current_role = Set(request.form['roles'].split(','))
-    req_course_data = request.form['lis_result_sourcedid']
+    current_role = Set(request.form.get('roles').split(','))
+    req_course_data = request.form.get('lis_result_sourcedid')
     db_lms = db_session.query(LMS).filter_by(lms_login = g.lms).first()
-    context_id = request.form['context_id']
+    context_id = request.form.get('context_id')
 
     data = { 'user_agent' : request.user_agent,
              'origin_ip' : request.remote_addr,
              'lms' : g.lms,
              'lms_id' : db_lms.id,
-             'context_label' : request.form['context_label'],
+             'context_label' : request.form.get('context_label'),
              'context_id' : context_id,
              'access' : False
              }
 
     db_course = db_session.query(Course).filter_by(lms = db_lms, course_id = context_id).first()
+    if db_course is None:
+        return render_template('lti/instructions.html', info=data)
     course_experiments = db_session.query(PermissionOnCourse).filter_by(course_id = db_course.id).all()
 
     data['context_experiments'] = [exp.permission_on_lab for exp in course_experiments]
@@ -318,7 +320,7 @@ def lti_launch_experiment():
 
     experiment_identifier = None
     try:
-        experiment_identifier = request.form['identifier']
+        experiment_identifier = request.form.get('identifier')
     except:
         return "Reload and select an experiment"
 
