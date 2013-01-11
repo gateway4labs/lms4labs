@@ -18,7 +18,8 @@ import uuid
 import traceback
 import urlparse
 from functools import wraps
-
+from sets import Set
+from yaml import load as yload
 # 
 # Flask imports
 # 
@@ -34,7 +35,9 @@ from labmanager.rlms     import get_permissions_form_class
 from labmanager import app
 from labmanager.views import get_json, deletes_elements, get_scorm_object, get_authentication_scorm, retrieve_courses
 from labmanager.views.lms import requires_lms_auth
+from ims_lti_py import ToolProvider
 
+config = yload(open('labmanager/config.yaml'))
 ###############################################################################
 # 
 # 
@@ -47,6 +50,24 @@ from labmanager.views.lms import requires_lms_auth
 def requires_lms_admin_session(f):
     @wraps(f)
     def decorated(*args, **kwargs):
+
+        if 'oauth_consumer_key' in request.form:
+            lmsname = request.form['oauth_consumer_key']
+            lms = db_session.query(LMS).filter_by(lms_login = lmsname).first()
+            # check for nonce
+            # check for old requests
+
+            if lms is None:
+                return None
+
+            secret = lms.lms_password
+            tool_provider = ToolProvider(lmsname, secret, request.form.to_dict())
+
+            if (tool_provider.valid_request(request) == False):
+                return None
+
+            loginltiuser = _login_as_lms(lmsname,lmsname)
+
         logged_in    = session.get('logged_in', False)
         session_type = session.get('session_type', '')
         if not logged_in or session_type != 'lms_admin':
@@ -307,3 +328,53 @@ def lms_admin_scorms():
     permission_on_labs = db_session.query(PermissionOnLaboratory).filter_by(lms = db_lms).all()
     return render_template("lms_admin/scorms.html", permissions = permission_on_labs)
 
+
+@app.route("/lti/admin/", methods = ['POST'])
+@requires_lms_admin_session
+def admin_ims():
+    response = None
+
+    consumer_key = request.form.get('oauth_consumer_key')
+    db_lms = db_session.query(LMS).filter_by(lms_login = session['lms']).first()
+    context_id = request.form.get('context_id')
+    context_label = request.form.get('context_label')
+
+    data = { 'user_agent' : request.user_agent,
+             'origin_ip' : request.remote_addr,
+             'lms' : db_lms.name,
+             'lms_id' : db_lms.id,
+             'context_label' : context_label,
+             'context_id' : context_id,
+             }
+
+    # Defined by the standard. After this comes the role of the user as in
+    # 'urn:lti:sysrole:ims/lis/Administrator' or 'urn:lti:sysrole:ims/lis/SysAdmin'
+    urn_role_base = 'urn:lti:sysrole:ims/lis/'
+    roles = Set()
+
+    split_roles = request.form.get('roles').split(',')
+    for role in split_roles:
+        if role.startswith(urn_role_base):
+            roles.add(role[len(urn_role_base):])
+
+    admin_roles = Set(config['standard_urn_admin_roles'])
+    current_users_roles = roles & admin_roles # Set intersection
+
+    if len(current_users_roles) > 0:
+        data['role'] = current_users_roles.pop() # Returns an arbitrary element
+        data['rlms'] = {}
+        data['rlms_ids'] = {}
+
+        db_course = db_session.query(Course).filter_by(lms = db_lms, course_id = context_id).first()
+        if db_course is None:
+            db_course = Course(db_lms, context_id, context_label)
+            db_session.add(db_course)
+            db_session.commit()
+
+        response = redirect(url_for('lms_admin_courses_permissions', course_id = db_course.id))
+
+    else:
+        data['role'] = split_roles[0]
+        response = render_template('lti/unknown_role.html', info=data)
+
+    return response
